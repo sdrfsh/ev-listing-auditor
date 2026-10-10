@@ -29,7 +29,7 @@ export class IssueService {
     return this.issues.findBy({ vehicle: { id: vehicleId } });
   }
 
-  findBySellerId(seller_id: number): Promise<Issue[]> {
+  findBySellerId(seller_id: number) : Promise<Issue[]> {
     return this.issues.findBy({ sellerId: seller_id });
   }
 
@@ -48,10 +48,7 @@ export class IssueService {
     return await this.issues.save(issue);
   }
 
-  async changeIssueStatus(
-    issue_id: number,
-    status: IssueStatus,
-  ): Promise<Issue> {
+  async changeIssueStatus(issue_id: number, status: IssueStatus): Promise<Issue> {
     const issue = await this.findOne(issue_id);
     issue.status = status;
     issue.resolvedAt = (
