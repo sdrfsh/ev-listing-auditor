@@ -1,0 +1,8 @@
+{
+  "oxc.enable.oxlint": true,
+  "oxc.enable.oxfmt": false,
+  "oxc.lint.run": "onType",
+  "oxc.typeAware": true,
+  "oxc.configPath": "backend/.oxlintrc.json",
+  "oxc.tsConfigPath": "backend/tsconfig.json"
+}
