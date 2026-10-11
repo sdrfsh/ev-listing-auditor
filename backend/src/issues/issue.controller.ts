@@ -48,10 +48,11 @@ export class IssueController {
   }
 
   @Put(':id/status')
-  changeIssueStatus(
+  updateIssue(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: UpdateIssueStatusDto,
   ): Promise<Issue> {
-    return this.issueService.changeIssueStatus(id, dto.status);
+    return this.issueService.updateIssue(id, dto.status);
   }
+
 }
