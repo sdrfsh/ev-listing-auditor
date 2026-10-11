@@ -6,6 +6,7 @@ import { CreateIssuesDto } from './dto/create-issues.dto.js';
 import { IssueStatus } from '../common/issue-status.enum.js';
 import { VehicleService } from '../vehicles/vehicle.service.js';
 import { PaginationDto } from '../common/pagination.dto.js';
+import { Vehicle } from '../vehicles/entities/vehicle.entity.js';
 
 @Injectable()
 export class IssueService {
@@ -35,7 +36,7 @@ export class IssueService {
     return await this.issues.findBy({ vehicle: { id: vehicleId } });
   }
 
-  async findBySellerId(seller_id: number) : Promise<Issue[]> {
+  async findBySellerId(seller_id: number): Promise<Issue[]> {
     return await this.issues.findBy({ sellerId: seller_id });
   }
 
@@ -55,12 +56,43 @@ export class IssueService {
     return await this.issues.save(issue);
   }
 
-  async changeIssueStatus(issue_id: number, status: IssueStatus): Promise<Issue> {
-    const issue = await this.findOne(issue_id);    
+  async changeIssueStatus(
+    issue_id: number,
+    status: IssueStatus,
+  ): Promise<Issue> {
+    const issue = await this.issues.findOne({
+      where: { id: issue_id },
+      relations: { vehicle: true },
+    });
+    if (!issue) {
+      throw new NotFoundException(`issue ${issue_id} not found`);
+    }
+
+    if (status === IssueStatus.Confirmed) {
+      await this.applyFieldChange(issue);
+    }
+
     issue.status = status;
     issue.resolvedAt = (
       status === IssueStatus.Pending ? null : new Date()
     ) as Date;
     return this.issues.save(issue);
+  }
+
+  private async applyFieldChange(issue: Issue): Promise<void> {
+    const manager = this.issues.manager;
+    const column = manager
+      .getRepository(Vehicle)
+      .metadata.findColumnWithPropertyName(issue.fieldName);
+
+    if (!column) {
+      throw new Error(`Vehicle has no column for "${issue.fieldName}"`);
+    }
+
+    const value =
+      column.type === 'int' ? Number(issue.newValue) : issue.newValue;
+    await manager.update(Vehicle, issue.vehicle.id, {
+      [issue.fieldName]: value,
+    });
   }
 }
