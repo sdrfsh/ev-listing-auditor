@@ -8,12 +8,14 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { IssueService } from './issue.service.js';
 import { Issue } from './entities/issue.entity.js';
 import { CreateIssuesDto } from './dto/create-issues.dto.js';
 import { UpdateIssueStatusDto } from './dto/update-issue-status.dto.js';
 import { PaginationDto } from '../common/pagination.dto.js';
 
+@ApiTags('issues')
 @Controller('issues')
 export class IssueController {
   constructor(private readonly issueService: IssueService) {}
