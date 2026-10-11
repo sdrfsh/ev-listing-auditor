@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { EntityManager, FindOptionsRelations, Repository } from 'typeorm';
@@ -12,6 +13,11 @@ import { EditableField } from '../common/editable-field.enum.js';
 import { VehicleService } from '../vehicles/vehicle.service.js';
 import { PaginationDto } from '../common/pagination.dto.js';
 import { Vehicle } from '../vehicles/entities/vehicle.entity.js';
+import { ReportIssueDto } from './dto/report-issue.dto.js';
+import {
+  ExtractionService,
+  equipmentName,
+} from '../extraction/extraction.service.js';
 
 @Injectable()
 export class IssueService {
@@ -19,6 +25,7 @@ export class IssueService {
     @InjectRepository(Issue)
     private readonly issues: Repository<Issue>,
     private readonly vehicleService: VehicleService,
+    private readonly extraction: ExtractionService,
   ) {}
 
   async findAll({ limit, offset }: PaginationDto): Promise<Issue[]> {
@@ -46,6 +53,74 @@ export class IssueService {
 
   async findBySellerId(seller_id: number): Promise<Issue[]> {
     return await this.issues.findBy({ sellerId: seller_id });
+  }
+
+  async findByVin(vin: string): Promise<Issue[]> {
+    return await this.issues.find({
+      where: { vehicle: { VIN: vin.toUpperCase() } },
+      relations: { vehicle: true },
+      order: { createdAt: 'DESC' },
+    });
+  }
+
+  // Seller writes free text -> VIN check -> model extracts edits -> one pending issue per edit
+  async reportIssue(dto: ReportIssueDto): Promise<Issue[]> {
+    // 1. VIN: from the dto (second try) or from the message itself
+    const vin = dto.vin ?? this.extraction.findVin(dto.message);
+    if (!vin) {
+      throw new UnprocessableEntityException({
+        statusCode: 422,
+        missing: 'vin',
+        message:
+          "Please add your car's VIN (17 characters) so we know which car you mean.",
+      });
+    }
+
+    // 2. The car must exist and belong to this seller (404 otherwise)
+    const vehicle = await this.vehicleService.findBySellerAndVin(
+      dto.sellerId,
+      vin,
+    );
+
+    // 3. Ask the model what should change (can be several things)
+    const extracted = await this.extraction.extract(dto.message);
+    if (!extracted) {
+      throw new BadRequestException(
+        'Sorry, we could not understand what to change. Please be more specific, e.g. "the mileage is 41,000 km".',
+      );
+    }
+
+    // 4. Skip edits that change nothing: same mileage, adding an item that's
+    //    already listed, or removing ("-item") one that isn't there
+    const current = (vehicle.equipments ?? '')
+      .split(',')
+      .map((item) => item.trim().toLowerCase())
+      .filter(Boolean);
+    const edits = extracted.edits.filter((edit) => {
+      if (edit.field === EditableField.Equipments) {
+        const listed = current.includes(equipmentName(edit.value));
+        const isRemoval = edit.value.startsWith('-');
+        return isRemoval ? listed : !listed;
+      }
+      return String(vehicle[edit.field]) !== edit.value;
+    });
+    if (!edits.length) {
+      throw new BadRequestException('Your listing already has these details.');
+    }
+
+    // 5. One pending issue per edit; save([...]) stores them all or none
+    const issues = edits.map((edit) =>
+      this.issues.create({
+        sellerId: dto.sellerId,
+        vehicle: { id: vehicle.id },
+        fieldName: edit.field,
+        oldValue: String(vehicle[edit.field] ?? ''),
+        newValue: edit.value,
+        sellerMessage: dto.message,
+        createdAt: new Date(),
+      }),
+    );
+    return await this.issues.save(issues);
   }
 
   async createIssue(dto: CreateIssuesDto): Promise<Issue> {

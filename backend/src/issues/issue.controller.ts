@@ -14,13 +14,12 @@ import { Issue } from './entities/issue.entity.js';
 import { CreateIssuesDto } from './dto/create-issues.dto.js';
 import { UpdateIssueStatusDto } from './dto/update-issue-status.dto.js';
 import { PaginationDto } from '../common/pagination.dto.js';
-import { Extraction } from '../extraction/extraction-result.interface.js';
-import { ExtractionService } from '../extraction/extraction.service.js';
+import { ReportIssueDto } from './dto/report-issue.dto.js';
 
 @ApiTags('issues')
 @Controller('issues')
 export class IssueController {
-  constructor(private readonly issueService: IssueService, private readonly extractionService: ExtractionService) {}
+  constructor(private readonly issueService: IssueService) {}
 
   @Get()
   findAll(@Query() pagination: PaginationDto): Promise<Issue[]> {
@@ -37,6 +36,11 @@ export class IssueController {
     @Param('vehicle_id', ParseIntPipe) vehicle_id: number,
   ): Promise<Issue[]> {
     return this.issueService.findByVehicleId(vehicle_id);
+  }
+
+  @Get('vin/:vin')
+  findByVin(@Param('vin') vin: string): Promise<Issue[]> {
+    return this.issueService.findByVin(vin);
   }
 
   @Get('seller/:seller_id')
@@ -59,9 +63,10 @@ export class IssueController {
     return this.issueService.updateIssue(id, dto.status);
   }
 
+  // Seller sends free text -> one pending issue per change found; 422 asks for the VIN if missing
   @Post('report')
-  async ReportIssue(@Body() userMessage: string): Promise<Extraction | null>{
-    return await this.extractionService.extract(userMessage);
+  reportIssue(@Body() dto: ReportIssueDto): Promise<Issue[]> {
+    return this.issueService.reportIssue(dto);
   }
 
 }
