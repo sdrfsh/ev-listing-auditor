@@ -23,6 +23,9 @@ import { IssueModule } from './issues/issue.module.js';
         password: config.get<string>('POSTGRES_PASSWORD'),
         database: config.get<string>('POSTGRES_DB'),
         entities: [join(import.meta.dirname, '**/*.entity.js')],
+        migrations: [join(import.meta.dirname, 'migrations/*.js')],
+        synchronize: false, // never auto-change tables; use migrations
+        migrationsRun: true, // apply pending migrations when the app starts
       }),
     }),
     VehicleModule,
