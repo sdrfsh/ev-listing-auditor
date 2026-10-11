@@ -4,36 +4,51 @@ import { Repository } from 'typeorm';
 import { Issue } from './entities/issue.entity.js';
 import { CreateIssuesDto } from './dto/create-issues.dto.js';
 import { IssueStatus } from '../common/issue-status.enum.js';
+import { VehicleService } from '../vehicles/vehicle.service.js';
+import { PaginationDto } from '../common/pagination.dto.js';
 
 @Injectable()
 export class IssueService {
   constructor(
     @InjectRepository(Issue)
     private readonly issues: Repository<Issue>,
+    private readonly vehicleService: VehicleService,
   ) {}
 
-  async findAll(): Promise<Issue[]> {
-    return await this.issues.find();
+  async findAll({ limit, offset }: PaginationDto): Promise<Issue[]> {
+    return await this.issues.find({
+      take: limit,
+      skip: offset,
+      order: { id: 'ASC' },
+    });
   }
 
   async findOne(id: number): Promise<Issue> {
     const issue = await this.issues.findOneBy({ id });
-
     if (!issue) {
       throw new NotFoundException(`issue ${id} not found`);
     }
     return issue;
   }
 
-  findByVehicleId(vehicleId: number): Promise<Issue[]> {
-    return this.issues.findBy({ vehicle: { id: vehicleId } });
+  async findByVehicleId(vehicleId: number): Promise<Issue[]> {
+    const issues = await this.issues.findBy({ vehicle: { id: vehicleId } });
+    if (issues.length === 0) {
+      throw new NotFoundException(`No issues found for vehicle ${vehicleId}`);
+    }
+    return issues;
   }
 
-  findBySellerId(seller_id: number) : Promise<Issue[]> {
-    return this.issues.findBy({ sellerId: seller_id });
+  async findBySellerId(seller_id: number) : Promise<Issue[]> {
+    const issues = await this.issues.findBy({ sellerId: seller_id });
+    if (issues.length === 0) {
+      throw new NotFoundException(`No issues found for seller ${seller_id}`);
+    }
+    return issues;
   }
 
   async createIssue(dto: CreateIssuesDto): Promise<Issue> {
+    await this.vehicleService.findOne(dto.vehicleId);
     const issue = this.issues.create({
       sellerId: dto.sellerId,
       vehicle: {

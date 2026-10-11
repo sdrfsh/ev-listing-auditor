@@ -5,18 +5,20 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Query,
 } from '@nestjs/common';
 import { VehicleService } from './vehicle.service.js';
 import { Vehicle } from './entities/vehicle.entity.js';
 import { ImportVehicleDto } from './dto/import-vehicle.dto.js';
+import { PaginationDto } from '../common/pagination.dto.js';
 
 @Controller('vehicles')
 export class VehicleController {
   constructor(private readonly vehiclesService: VehicleService) {}
 
   @Get()
-  findAll(): Promise<Vehicle[]> {
-    return this.vehiclesService.findAll();
+  findAll(@Query() pagination: PaginationDto): Promise<Vehicle[]> {
+    return this.vehiclesService.findAll(pagination);
   }
 
   @Get(':id')
@@ -25,11 +27,11 @@ export class VehicleController {
   }
 
   @Get('seller/:seller_id')
-  findOneBySellerId(@Param('seller_id', ParseIntPipe) seller_id: number): Promise<Vehicle[]> {
+  findBySellerId(@Param('seller_id', ParseIntPipe) seller_id: number): Promise<Vehicle[]> {
     return this.vehiclesService.findBySellerId(seller_id);
   }
 
-  @Post('import')
+  @Post('create')
   importVehicle(@Body() dto: ImportVehicleDto): Promise<Vehicle> {
     return this.vehiclesService.importVehicle(dto);
   }

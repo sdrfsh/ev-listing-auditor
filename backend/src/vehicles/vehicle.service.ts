@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Vehicle } from './entities/vehicle.entity.js';
 import { ImportVehicleDto } from './dto/import-vehicle.dto.js';
+import { PaginationDto } from '../common/pagination.dto.js';
 
 @Injectable()
 export class VehicleService {
@@ -11,8 +12,12 @@ export class VehicleService {
     private readonly vehicles: Repository<Vehicle>,
   ) {}
 
-  findAll(): Promise<Vehicle[]> {
-    return this.vehicles.find();
+  async findAll({ limit, offset }: PaginationDto): Promise<Vehicle[]> {
+    return await this.vehicles.find({
+      take: limit,
+      skip: offset,
+      order: { id: 'ASC' },
+    });
   }
 
   async findOne(id: number): Promise<Vehicle> {
@@ -33,8 +38,8 @@ export class VehicleService {
     return vehicles;
   }
 
-  importVehicle(dto: ImportVehicleDto): Promise<Vehicle> {
+  async importVehicle(dto: ImportVehicleDto): Promise<Vehicle> {
     const vehicle = this.vehicles.create(dto);
-    return this.vehicles.save(vehicle);
+    return await this.vehicles.save(vehicle);
   }
 }
