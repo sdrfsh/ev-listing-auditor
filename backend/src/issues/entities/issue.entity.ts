@@ -15,9 +15,6 @@ export class Issue {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ name: 'issue_id' })
-  issueId: number;
-
   @Column({ name: 'seller_id' })
   sellerId: number;
 
