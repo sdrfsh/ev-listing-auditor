@@ -22,7 +22,6 @@ import { VehicleModule } from './vehicles/vehicle.module.js';
         password: config.get<string>('POSTGRES_PASSWORD'),
         database: config.get<string>('POSTGRES_DB'),
         entities: [join(import.meta.dirname, '**/*.entity.js')],
-        synchronize: true,
       }),
     }),
     VehicleModule,
