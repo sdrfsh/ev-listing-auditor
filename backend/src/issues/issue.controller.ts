@@ -14,11 +14,13 @@ import { Issue } from './entities/issue.entity.js';
 import { CreateIssuesDto } from './dto/create-issues.dto.js';
 import { UpdateIssueStatusDto } from './dto/update-issue-status.dto.js';
 import { PaginationDto } from '../common/pagination.dto.js';
+import { Extraction } from '../extraction/extraction-result.interface.js';
+import { ExtractionService } from '../extraction/extraction.service.js';
 
 @ApiTags('issues')
 @Controller('issues')
 export class IssueController {
-  constructor(private readonly issueService: IssueService) {}
+  constructor(private readonly issueService: IssueService, private readonly extractionService: ExtractionService) {}
 
   @Get()
   findAll(@Query() pagination: PaginationDto): Promise<Issue[]> {
@@ -55,6 +57,11 @@ export class IssueController {
     @Body() dto: UpdateIssueStatusDto,
   ): Promise<Issue> {
     return this.issueService.updateIssue(id, dto.status);
+  }
+
+  @Post('report')
+  async ReportIssue(@Body() userMessage: string): Promise<Extraction | null>{
+    return await this.extractionService.extract(userMessage);
   }
 
 }
