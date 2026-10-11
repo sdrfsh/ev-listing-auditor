@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsRelations, Repository } from 'typeorm';
+import { EntityManager, FindOptionsRelations, Repository } from 'typeorm';
 import { Issue } from './entities/issue.entity.js';
 import { CreateIssuesDto } from './dto/create-issues.dto.js';
 import { IssueStatus } from '../common/issue-status.enum.js';
@@ -76,17 +76,21 @@ export class IssueService {
     throw new BadRequestException('Status must be confirmed or rejected');
   }
   
-    if (status === IssueStatus.Confirmed) {
-      await this.applyFieldChange(issue);
-    }
+    return this.issues.manager.transaction(async (manager) => {
+      if (status === IssueStatus.Confirmed) {
+        await this.applyFieldChange(manager, issue);
+      }
 
-    issue.status = status;
-    issue.resolvedAt = (new Date()) as Date;
-    return this.issues.save(issue);
+      issue.status = status;
+      issue.resolvedAt = (new Date()) as Date;
+      return manager.save(issue);
+    });
   }
 
-  private async applyFieldChange(issue: Issue): Promise<void> {
-    const manager = this.issues.manager;
+  private async applyFieldChange(
+    manager: EntityManager,
+    issue: Issue,
+  ): Promise<void> {
     const column = manager
       .getRepository(Vehicle)
       .metadata.findColumnWithPropertyName(issue.fieldName);
