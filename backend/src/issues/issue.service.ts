@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { FindOptionsRelations, Repository } from 'typeorm';
 import { Issue } from './entities/issue.entity.js';
 import { CreateIssuesDto } from './dto/create-issues.dto.js';
 import { IssueStatus } from '../common/issue-status.enum.js';
@@ -24,8 +24,11 @@ export class IssueService {
     });
   }
 
-  async findOne(id: number): Promise<Issue> {
-    const issue = await this.issues.findOneBy({ id });
+  async findOne(
+    id: number,
+    relations?: FindOptionsRelations<Issue>,
+  ): Promise<Issue> {
+    const issue = await this.issues.findOne({ where: { id }, relations });
     if (!issue) {
       throw new NotFoundException(`issue ${id} not found`);
     }
@@ -60,13 +63,7 @@ export class IssueService {
     issue_id: number,
     status: IssueStatus,
   ): Promise<Issue> {
-    const issue = await this.issues.findOne({
-      where: { id: issue_id },
-      relations: { vehicle: true },
-    });
-    if (!issue) {
-      throw new NotFoundException(`issue ${issue_id} not found`);
-    }
+    const issue = await this.findOne(issue_id);
 
     if (status === IssueStatus.Confirmed) {
       await this.applyFieldChange(issue);
