@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOptionsRelations, Repository } from 'typeorm';
 import { Issue } from './entities/issue.entity.js';
@@ -63,16 +67,21 @@ export class IssueService {
     issue_id: number,
     status: IssueStatus,
   ): Promise<Issue> {
-    const issue = await this.findOne(issue_id);
+    const issue = await this.findOne(issue_id, { vehicle: true });
 
+    if (issue.status !== IssueStatus.Pending) {
+    throw new BadRequestException(`Issue ${issue_id} is already ${issue.status}`);
+  }
+  if (status === IssueStatus.Pending) {
+    throw new BadRequestException('Status must be confirmed or rejected');
+  }
+  
     if (status === IssueStatus.Confirmed) {
       await this.applyFieldChange(issue);
     }
 
     issue.status = status;
-    issue.resolvedAt = (
-      status === IssueStatus.Pending ? null : new Date()
-    ) as Date;
+    issue.resolvedAt = (new Date()) as Date;
     return this.issues.save(issue);
   }
 
