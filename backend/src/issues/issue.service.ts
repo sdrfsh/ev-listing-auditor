@@ -32,19 +32,11 @@ export class IssueService {
   }
 
   async findByVehicleId(vehicleId: number): Promise<Issue[]> {
-    const issues = await this.issues.findBy({ vehicle: { id: vehicleId } });
-    if (issues.length === 0) {
-      throw new NotFoundException(`No issues found for vehicle ${vehicleId}`);
-    }
-    return issues;
+    return await this.issues.findBy({ vehicle: { id: vehicleId } });
   }
 
   async findBySellerId(seller_id: number) : Promise<Issue[]> {
-    const issues = await this.issues.findBy({ sellerId: seller_id });
-    if (issues.length === 0) {
-      throw new NotFoundException(`No issues found for seller ${seller_id}`);
-    }
-    return issues;
+    return await this.issues.findBy({ sellerId: seller_id });
   }
 
   async createIssue(dto: CreateIssuesDto): Promise<Issue> {
@@ -64,7 +56,7 @@ export class IssueService {
   }
 
   async changeIssueStatus(issue_id: number, status: IssueStatus): Promise<Issue> {
-    const issue = await this.findOne(issue_id);
+    const issue = await this.findOne(issue_id);    
     issue.status = status;
     issue.resolvedAt = (
       status === IssueStatus.Pending ? null : new Date()

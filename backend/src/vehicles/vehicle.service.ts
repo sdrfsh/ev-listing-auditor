@@ -36,13 +36,9 @@ export class VehicleService {
   }
 
   async findBySellerId(seller_id: number): Promise<Vehicle[]> {
-    const vehicles = await this.vehicles.findBy({
+    return await this.vehicles.findBy({
       sellerId: seller_id,
     });
-    if (vehicles.length === 0) {
-      throw new NotFoundException(`No vehicles found for seller ${seller_id}`);
-    }
-    return vehicles;
   }
 
   async importVehicle(dto: ImportVehicleDto): Promise<Vehicle> {
