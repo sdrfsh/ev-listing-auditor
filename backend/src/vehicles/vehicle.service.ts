@@ -1,7 +1,12 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Vehicle } from './entities/vehicle.entity.js';
+import { VinSpec } from '../vin-specs/entities/vin-spec.entity.js';
 import { ImportVehicleDto } from './dto/import-vehicle.dto.js';
 import { PaginationDto } from '../common/pagination.dto.js';
 
@@ -10,6 +15,8 @@ export class VehicleService {
   constructor(
     @InjectRepository(Vehicle)
     private readonly vehicles: Repository<Vehicle>,
+    @InjectRepository(VinSpec)
+    private readonly vinSpecs: Repository<VinSpec>,
   ) {}
 
   async findAll({ limit, offset }: PaginationDto): Promise<Vehicle[]> {
@@ -39,6 +46,10 @@ export class VehicleService {
   }
 
   async importVehicle(dto: ImportVehicleDto): Promise<Vehicle> {
+    const vinExists = await this.vinSpecs.existsBy({ vin: dto.VIN });
+    if (!vinExists) {
+      throw new BadRequestException('VIN not found');
+    }
     const vehicle = this.vehicles.create(dto);
     return await this.vehicles.save(vehicle);
   }
