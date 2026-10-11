@@ -38,5 +38,5 @@ export class ImportVehicleDto {
 
   @IsOptional()
   @IsString()
-  equipments: string;
+  equipments?: string;
 }

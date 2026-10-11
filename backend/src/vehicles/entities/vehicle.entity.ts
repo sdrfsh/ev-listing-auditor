@@ -38,6 +38,6 @@ export class Vehicle {
   @Column({ name: 'is_available', type: 'bool' })
   isAvailable: boolean;
 
-  @Column({ name: 'equipments' })
-  equipments: string;
+  @Column({ name: 'equipments', type: 'varchar', nullable: true })
+  equipments: string | null;
 }

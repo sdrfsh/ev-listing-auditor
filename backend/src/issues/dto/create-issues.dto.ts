@@ -13,7 +13,7 @@ export class CreateIssuesDto {
 
   @IsOptional()
   @IsString()
-  oldValue: string;
+  oldValue?: string;
 
   @IsString()
   newValue: string;

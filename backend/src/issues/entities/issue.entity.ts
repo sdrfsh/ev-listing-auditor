@@ -25,8 +25,8 @@ export class Issue {
   @Column({ name: 'field_name', type: 'enum', enum: EditableField })
   fieldName: EditableField;
 
-  @Column({ name: 'old_value' })
-  oldValue: string;
+  @Column({ name: 'old_value', type: 'varchar', nullable: true })
+  oldValue: string | null;
 
   @Column({ name: 'new_value' })
   newValue: string;
