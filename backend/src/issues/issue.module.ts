@@ -11,4 +11,4 @@ import { Vehicle } from '../vehicles/entities/vehicle.entity.js';
   providers: [IssueService],
   exports: [IssueService],
 })
-export class VehicleModule {}
+export class IssueModule {}
