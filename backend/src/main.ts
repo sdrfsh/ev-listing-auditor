@@ -1,10 +1,14 @@
 import { ValidationPipe } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module.js';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
+  const env = app.get(ConfigService);
+
+  app.enableCors({ origin: env.get<string>('FRONTEND_URL', 'http://localhost:3001') });
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 
   // API docs at /docs (JSON at /docs-json)
