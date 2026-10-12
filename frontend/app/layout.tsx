@@ -8,7 +8,7 @@ export default function RootLayout({children}: {children: React.ReactNode;}): Re
 
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className="min-h-screen flex">
+      <body className="min-h-screen flex" suppressHydrationWarning>
         <AppRouterCacheProvider options={{ enableCssLayer: true }}>
           <Providers>
             <Drawer />
