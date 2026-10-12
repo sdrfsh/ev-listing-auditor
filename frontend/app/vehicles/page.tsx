@@ -1,5 +1,15 @@
 import type { JSX } from "react";
+import { Suspense } from "react";
+import { VehicleList } from "./vehicleList";
 
-export default async function VehiclesPage(): Promise<JSX.Element> {
-  return <h1 className="text-2xl font-semibold">Hello from Vehicles</h1>;
+
+export default function VehiclesPage(): JSX.Element {
+  return (
+    <div>
+      <h1 className="text-2xl font-semibold mb-4">Vehicles</h1>
+      <Suspense fallback={<p>Loading vehicles…</p>}>
+        <VehicleList/>
+      </Suspense>
+    </div>
+  );
 }
