@@ -2,11 +2,7 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  ManyToOne,
-  JoinColumn,
-  CreateDateColumn,
 } from 'typeorm';
-import { VinSpec } from './vin-spec.entity.js';
 
 @Entity('vehicle')
 export class Vehicle {
@@ -19,9 +15,8 @@ export class Vehicle {
   @Column({ name: 'vin' })
   VIN: string;
 
-  @ManyToOne(() => VinSpec)
-  @JoinColumn({ name: 'vin', referencedColumnName: 'vin' })
-  vinSpec: VinSpec;
+  @Column()
+  model: string;
 
   @Column({ name: 'mileage', type: 'int' })
   mileage: number;

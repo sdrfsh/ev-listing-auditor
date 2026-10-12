@@ -43,18 +43,7 @@ export async function VehicleList(): Promise<JSX.Element> {
         <TableBody>
           {vehicles.map((v) => (
             <TableRow key={v.id} hover>
-              <TableCell>
-                {v.vinSpec ? (
-                  <>
-                    <div className="font-medium">{`${v.vinSpec.make} ${v.vinSpec.model}`}</div>
-                    <div className="text-xs text-[#6b6b66]">
-                      {[v.vinSpec.trim, v.vinSpec.modelYear].filter(Boolean).join(" · ")}
-                    </div>
-                  </>
-                ) : (
-                  "–"
-                )}
-              </TableCell>
+              <TableCell className="text-xs text-[#6b6b66]">{v.model}</TableCell>
               <TableCell className="font-mono text-xs text-[#6b6b66]">{v.VIN}</TableCell>
               <TableCell align="right">{`${v.mileage.toLocaleString()} km`}</TableCell>
               <TableCell align="right">{`${v.batteryHealth}%`}</TableCell>

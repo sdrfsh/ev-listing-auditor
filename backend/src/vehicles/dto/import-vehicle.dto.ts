@@ -15,6 +15,9 @@ export class ImportVehicleDto {
   @IsString()
   VIN: string;
 
+  @IsString()
+  model: string;
+
   @Type(() => Number)
   @IsInt()
   @Min(0)
