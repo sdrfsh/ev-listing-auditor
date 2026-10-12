@@ -9,6 +9,11 @@ build/
 out/
 *.tsbuildinfo
 
+# Next.js (frontend)
+frontend/next-env.d.ts
+.vercel/
+*.pem
+
 # Tests
 coverage/
 .nyc_output/
@@ -18,6 +23,7 @@ logs/
 *.log
 npm-debug.log*
 pnpm-debug.log*
+.pnpm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
