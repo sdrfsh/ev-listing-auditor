@@ -7,7 +7,7 @@ import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import CheckIcon from "@mui/icons-material/Check";
 import ClearIcon from "@mui/icons-material/Clear";
-import { updateIssueStatus } from "./actions";
+import { updateIssueStatus } from "@/lib/actions";
 
 export function IssueActions({ id }: { id: number }): JSX.Element {
   const [error, setError] = useState<string | null>(null);

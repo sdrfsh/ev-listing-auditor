@@ -49,7 +49,7 @@ export async function updateIssueStatus(
     }
 
     // Re-render the issues page so the row shows its new status
-    revalidatePath("/issues");
+    revalidatePath("/admin/issues");
     return { ok: true };
   } catch {
     return { ok: false, message: "Can't reach the server. Is the backend running?" };

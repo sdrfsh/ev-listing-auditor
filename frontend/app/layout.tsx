@@ -1,19 +1,17 @@
 import "./globals.css";
+import { Geist } from "next/font/google";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v16-appRouter";
-import { Drawer } from "./components/drawer";
 import { Providers } from "./theme/providers";
 
+const geist = Geist({ subsets: ["latin"], variable: "--font-geist-sans" });
 
 export default function RootLayout({children}: {children: React.ReactNode;}): React.ReactElement {
 
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className="min-h-screen flex" suppressHydrationWarning>
+    <html lang="en" className={geist.variable} suppressHydrationWarning>
+      <body className="min-h-screen" suppressHydrationWarning>
         <AppRouterCacheProvider options={{ enableCssLayer: true }}>
-          <Providers>
-            <Drawer />
-            <main className="flex-1 p-6">{children}</main>
-          </Providers>
+          <Providers>{children}</Providers>
         </AppRouterCacheProvider>
       </body>
     </html>

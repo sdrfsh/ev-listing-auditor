@@ -1,11 +1,25 @@
 import type { JSX } from "react";
-import { ReportChat } from "./issues/reportChat";
+import Link from "next/link";
+import { PageHeader } from "./components/pageHeader";
+import { ReportChat } from "./components/reportChat";
 
-export default async function MainPage(): Promise<JSX.Element> {
+export default function CustomerView(): JSX.Element {
   return (
-    <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-semibold">Issues</h1>
-        <ReportChat />
-    </div>
+    <main className="px-10 py-10">
+      <div className="mx-auto max-w-6xl">
+        <PageHeader
+          title="Customer View"
+          subtitle="Tell us what's wrong with your listing and we'll fix it."
+          action={
+            <Link href="/admin" className="text-sm text-[#6b6b66] hover:text-[#1f6f5c]">
+              Go to admin dashboard »
+            </Link>
+          }
+        />
+        <div className="max-w-2xl">
+          <ReportChat />
+        </div>
+      </div>
+    </main>
   );
 }

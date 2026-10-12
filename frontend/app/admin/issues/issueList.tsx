@@ -9,6 +9,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { getIssues } from "@/lib/api";
 import type { IssueStatus } from "@/lib/types";
+import { EmptyState } from "@/app/components/pageHeader";
 import { IssueActions } from "./issueActions";
 
 const STATUS_COLOR: Record<IssueStatus, "warning" | "success" | "error"> = {
@@ -20,11 +21,11 @@ const STATUS_COLOR: Record<IssueStatus, "warning" | "success" | "error"> = {
 export async function IssueList(): Promise<JSX.Element> {
   const issues = await getIssues();
 
-  if (issues.length === 0) return <p>No issues yet.</p>;
+  if (issues.length === 0) return <EmptyState>No issues yet.</EmptyState>;
 
   return (
     <TableContainer component={Paper}>
-      <Table size="small">
+      <Table>
         <TableHead>
           <TableRow>
             <TableCell>Created</TableCell>
@@ -38,10 +39,12 @@ export async function IssueList(): Promise<JSX.Element> {
         <TableBody>
           {issues.map((i) => (
             <TableRow key={i.id} hover>
-              <TableCell>{new Date(i.createdAt).toLocaleString()}</TableCell>
+              <TableCell className="whitespace-nowrap text-[#6b6b66]">
+                {new Date(i.createdAt).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" })}
+              </TableCell>
               <TableCell>{i.sellerMessage}</TableCell>
-              <TableCell>{i.fieldName}</TableCell>
-              <TableCell>{i.oldValue ?? "–"}</TableCell>
+              <TableCell className="font-medium">{i.fieldName}</TableCell>
+              <TableCell className="text-[#6b6b66] line-through decoration-[#c8c8c2]">{i.oldValue ?? "–"}</TableCell>
               <TableCell>{i.newValue}</TableCell>
               <TableCell align="right">
                 {i.status === "pending" ? (
@@ -51,6 +54,7 @@ export async function IssueList(): Promise<JSX.Element> {
                     label={i.status}
                     color={STATUS_COLOR[i.status]}
                     size="small"
+                    variant="outlined"
                   />
                 )}
               </TableCell>
