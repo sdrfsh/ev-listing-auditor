@@ -6,7 +6,7 @@ import {
   JoinColumn,
   CreateDateColumn,
 } from 'typeorm';
-import { VinSpec } from '../../vin-specs/entities/vin-spec.entity.js';
+import { VinSpec } from './vin-spec.entity.js';
 
 @Entity('vehicle')
 export class Vehicle {

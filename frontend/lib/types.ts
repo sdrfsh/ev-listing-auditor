@@ -1,3 +1,14 @@
+export type VinSpec = {
+  vin: string;
+  make: string;
+  model: string;
+  trim: string;
+  modelYear: number;
+  batteryKwh: number;
+  listPrice: number;
+  equipmentSpecs: string[];
+};
+
 export type Vehicle = {
   id: number;
   sellerId: number;
@@ -8,6 +19,7 @@ export type Vehicle = {
   isSaleReady: boolean;
   isAvailable: boolean;
   equipments: string | null;
+  vinSpec?: VinSpec;
 };
 
 export type IssueStatus = "pending" | "confirmed" | "rejected";

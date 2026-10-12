@@ -27,7 +27,11 @@ export async function VehicleList(): Promise<JSX.Element> {
         {vehicles.map((v) => (
           <TableRow key={v.id} hover>
             <TableCell>{v.VIN}</TableCell>
-            <TableCell>{v.VIN}</TableCell>
+            <TableCell>
+              {v.vinSpec
+                ? `${v.vinSpec.make} ${v.vinSpec.model} ${v.vinSpec.trim} (${v.vinSpec.modelYear})`
+                : "-"}
+            </TableCell>
             <TableCell>{v.mileage}</TableCell>
             <TableCell>{v.batteryHealth}</TableCell>
             <TableCell>{v.equipments}</TableCell>

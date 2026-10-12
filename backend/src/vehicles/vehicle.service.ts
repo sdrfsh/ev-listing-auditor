@@ -1,13 +1,15 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Vehicle } from './entities/vehicle.entity.js';
-import { VinSpec } from '../vin-specs/entities/vin-spec.entity.js';
+import { VinSpec } from './entities/vin-spec.entity.js';
 import { ImportVehicleDto } from './dto/import-vehicle.dto.js';
+import { CreateVinSpecDto } from './dto/create-vin-spec.dto.js';
 import { PaginationDto } from '../common/pagination.dto.js';
 
 @Injectable()
@@ -21,6 +23,7 @@ export class VehicleService {
 
   async findAll({ limit, offset }: PaginationDto): Promise<Vehicle[]> {
     return await this.vehicles.find({
+      relations: { vinSpec: true },
       take: limit,
       skip: offset,
       order: { id: 'ASC' },
@@ -28,7 +31,10 @@ export class VehicleService {
   }
 
   async findOne(id: number): Promise<Vehicle> {
-    const vehicle = await this.vehicles.findOneBy({ id });
+    const vehicle = await this.vehicles.findOne({
+      where: { id },
+      relations: { vinSpec: true },
+    });
     if (!vehicle) {
       throw new NotFoundException(`Vehicle ${id} not found`);
     }
@@ -36,8 +42,9 @@ export class VehicleService {
   }
 
   async findBySellerId(seller_id: number): Promise<Vehicle[]> {
-    return await this.vehicles.findBy({
-      sellerId: seller_id,
+    return await this.vehicles.find({
+      where: { sellerId: seller_id },
+      relations: { vinSpec: true },
     });
   }
 
@@ -62,5 +69,30 @@ export class VehicleService {
     }
     const vehicle = this.vehicles.create(dto);
     return await this.vehicles.save(vehicle);
+  }
+
+  async findAllVinSpecs({ limit, offset }: PaginationDto): Promise<VinSpec[]> {
+    return await this.vinSpecs.find({
+      take: limit,
+      skip: offset,
+      order: { vin: 'ASC' },
+    });
+  }
+
+  async findVinSpec(vin: string): Promise<VinSpec> {
+    const vinSpec = await this.vinSpecs.findOneBy({ vin });
+    if (!vinSpec) {
+      throw new NotFoundException(`VIN spec ${vin} not found`);
+    }
+    return vinSpec;
+  }
+
+  async createVinSpec(dto: CreateVinSpecDto): Promise<VinSpec> {
+    const vinExists = await this.vinSpecs.existsBy({ vin: dto.vin });
+    if (vinExists) {
+      throw new ConflictException(`VIN spec ${dto.vin} already exists`);
+    }
+    const vinSpec = this.vinSpecs.create(dto);
+    return await this.vinSpecs.save(vinSpec);
   }
 }

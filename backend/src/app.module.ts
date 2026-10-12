@@ -6,7 +6,6 @@ import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 import { VehicleModule } from './vehicles/vehicle.module.js';
 import { IssueModule } from './issues/issue.module.js';
-import { VinSpecModule } from './vin-specs/vin-spec.module.js';
 
 @Module({
   imports: [
@@ -31,7 +30,6 @@ import { VinSpecModule } from './vin-specs/vin-spec.module.js';
     }),
     VehicleModule,
     IssueModule,
-    VinSpecModule,
   ],
   controllers: [AppController],
   providers: [AppService],
