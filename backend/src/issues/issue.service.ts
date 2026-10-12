@@ -57,7 +57,7 @@ export class IssueService {
 
   async findByVin(vin: string): Promise<Issue[]> {
     return await this.issues.find({
-      where: { vehicle: { VIN: vin.toUpperCase() } },
+      where: { vehicle: { vin: vin.toUpperCase() } },
       relations: { vehicle: true },
       order: { createdAt: 'DESC' },
     });

@@ -13,7 +13,7 @@ export class ImportVehicleDto {
   sellerId: number;
 
   @IsString()
-  VIN: string;
+  vin: string;
 
   @IsString()
   model: string;

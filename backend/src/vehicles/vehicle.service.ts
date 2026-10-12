@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -38,10 +39,9 @@ export class VehicleService {
     });
   }
 
-  // The seller's own car with this VIN (newest first, in case it was listed twice)
   async findBySellerAndVin(sellerId: number, vin: string): Promise<Vehicle> {
     const vehicle = await this.vehicles.findOne({
-      where: { sellerId, VIN: vin },
+      where: { sellerId, vin: vin },
       order: { id: 'DESC' },
     });
     if (!vehicle) {
@@ -53,6 +53,11 @@ export class VehicleService {
   }
 
   async importVehicle(dto: ImportVehicleDto): Promise<Vehicle> {
+    if (await this.vehicles.existsBy({ vin: dto.vin })) {
+      throw new ConflictException(
+        `A vehicle with VIN ${dto.vin} already exists`,
+      );
+    }
     const vehicle = this.vehicles.create(dto);
     return await this.vehicles.save(vehicle);
   }

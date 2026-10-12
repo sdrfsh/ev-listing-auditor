@@ -13,7 +13,7 @@ export class Vehicle {
   sellerId: number;
 
   @Column({ name: 'vin' })
-  VIN: string;
+  vin: string;
 
   @Column()
   model: string;
