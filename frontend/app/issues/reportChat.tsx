@@ -6,15 +6,17 @@ import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
+import IconButton from "@mui/material/IconButton";
 import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
+import CloseIcon from "@mui/icons-material/Close";
 import { reportIssue } from "./actions";
 
 type ChatMessage = { from: "user" | "bot"; text: string };
 
 const GREETING: ChatMessage = {
   from: "bot",
-  text: "Hi! What should we change in your listing? Tip: add your car's VIN to the message.",
+  text: "Hi! What should we change in your listing? Tip: add the car's VIN to the message.",
 };
 
 // 17 characters, no I, O or Q (same rule as the backend)
@@ -40,6 +42,7 @@ export function ReportChat(): JSX.Element {
   const [input, setInput] = useState("");
   const [pendingMessage, setPendingMessage] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const [isDone, setIsDone] = useState(false);
 
   function addMessage(from: ChatMessage["from"], text: string): void {
     setMessages((prev) => [...prev, { from, text }]);
@@ -50,12 +53,13 @@ export function ReportChat(): JSX.Element {
     setMessages([GREETING]);
     setInput("");
     setPendingMessage(null);
+    setIsDone(false);
   }
 
   function handleSend(e: FormEvent): void {
     e.preventDefault();
     const text = input.trim();
-    if (!text || isPending) return;
+    if (!text || isPending || isDone) return;
 
     addMessage("user", text);
     setInput("");
@@ -82,6 +86,7 @@ export function ReportChat(): JSX.Element {
           "bot",
           `Thanks! I created ${result.issues.length} issue(s): ${list}`,
         );
+        setIsDone(true);
       } else {
         addMessage("bot", result.message);
       }
@@ -98,7 +103,14 @@ export function ReportChat(): JSX.Element {
       </Button>
 
       <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
-        <DialogTitle>Report an issue</DialogTitle>
+        <DialogTitle sx={{ pr: 6 }}>Report an issue</DialogTitle>
+        <IconButton
+          aria-label="Close"
+          onClick={handleClose}
+          sx={{ position: "absolute", top: 8, right: 8 }}
+        >
+          <CloseIcon />
+        </IconButton>
 
         <DialogContent dividers>
           <Stack spacing={1}>
@@ -126,9 +138,9 @@ export function ReportChat(): JSX.Element {
             size="small"
             fullWidth
             autoFocus
-            disabled={isPending}
+            disabled={isPending || isDone}
           />
-          <Button type="submit" variant="contained" disabled={isPending}>
+          <Button type="submit" variant="contained" disabled={isPending || isDone}>
             Send
           </Button>
         </form>
