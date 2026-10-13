@@ -1,7 +1,7 @@
 export type Vehicle = {
   id: number;
   sellerId: number;
-  VIN: string;
+  vin: string;
   model: string;
   mileage: number;
   batteryHealth: number;
