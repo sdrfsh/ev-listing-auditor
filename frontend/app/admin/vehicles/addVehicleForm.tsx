@@ -62,6 +62,7 @@ export function AddVehicleForm(): JSX.Element {
           label="VIN"
           required
           fullWidth
+          helperText="17 letters and digits, no I, O or Q (e.g. 5YJ3E1EA7KF317000)"
           slotProps={{ htmlInput: { style: { fontFamily: "monospace" } } }}
         />
         <Stack direction="row" spacing={2}>

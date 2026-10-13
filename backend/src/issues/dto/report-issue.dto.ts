@@ -4,6 +4,7 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
+  Matches,
   MaxLength,
 } from 'class-validator';
 
@@ -22,7 +23,8 @@ export class ReportIssueDto {
   @Transform(({ value }) =>
     typeof value === 'string' ? value.trim().toUpperCase() : value,
   )
-  @IsString()
-  @IsNotEmpty()
+  @Matches(/^[A-HJ-NPR-Z0-9]{17}$/, {
+    message: 'vin must be 17 characters (no I, O or Q)',
+  })
   vin?: string;
 }
