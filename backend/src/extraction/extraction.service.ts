@@ -12,6 +12,8 @@ Allowed fields:
 - "batteryHealth": battery state of health in percent, number 0-100
 - "equipments": ONE item (e.g. "winter tires", "tow bar"). Several items = several edits.
   If the car does NOT have an item (seller wants it removed), put a minus sign first: "-tow bar".
+  Any name the seller says the car has or lacks is an item, even if it is short or unknown to you
+  (e.g. "abs", "winter tires", "tow bar"). Copy the name exactly. Never turn an item name into a mileage.
 
 Reply ONLY with JSON: {"edits": [{"field": "<field>", "value": "<value>"}]}
 If nothing matches these fields, reply {"edits": []}
@@ -22,6 +24,7 @@ Examples:
 "battery is at 87% not 80, also has a tow bar and a heat pump" -> {"edits": [{"field": "batteryHealth", "value": "87"}, {"field": "equipments", "value": "tow bar"}, {"field": "equipments", "value": "heat pump"}]}
 "actually there is no tow bar, I removed it" -> {"edits": [{"field": "equipments", "value": "-tow bar"}]}
 "it doesn't have the heat pump but it has winter tires" -> {"edits": [{"field": "equipments", "value": "-heat pump"}, {"field": "equipments", "value": "winter tires"}]}
+"we have k2 and we don't have a sunroof, battery is 91" -> {"edits": [{"field": "equipments", "value": "k2"}, {"field": "equipments", "value": "-sunroof"}, {"field": "batteryHealth", "value": "91"}]}
 "when do I get paid?" -> {"edits": []}`;
 
 const TIMEOUT_MS = 20_000;
