@@ -5,19 +5,6 @@ export class Init1791732631375 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`
-            CREATE TABLE "vin_specs" (
-                "vin" character varying(17) NOT NULL,
-                "make" character varying NOT NULL,
-                "model" character varying NOT NULL,
-                "trim" character varying NOT NULL,
-                "model_year" integer NOT NULL,
-                "battery_kwh" integer NOT NULL,
-                "list_price" integer NOT NULL,
-                "equipment_specs" jsonb NOT NULL DEFAULT '[]',
-                CONSTRAINT "PK_acac5a23d53d929e3785210dba9" PRIMARY KEY ("vin")
-            )
-        `);
-        await queryRunner.query(`
             CREATE TABLE "vehicle" (
                 "id" SERIAL NOT NULL,
                 "seller_id" integer NOT NULL,
@@ -53,10 +40,6 @@ export class Init1791732631375 implements MigrationInterface {
             )
         `);
         await queryRunner.query(`
-            ALTER TABLE "vehicle"
-            ADD CONSTRAINT "FK_960e864037056a9e38cb4277bdd" FOREIGN KEY ("vin") REFERENCES "vin_specs"("vin") ON DELETE NO ACTION ON UPDATE NO ACTION
-        `);
-        await queryRunner.query(`
             ALTER TABLE "issue"
             ADD CONSTRAINT "FK_830f754da8a8feec9a144c1e177" FOREIGN KEY ("vehicle_id") REFERENCES "vehicle"("id") ON DELETE CASCADE ON UPDATE NO ACTION
         `);
@@ -65,9 +48,6 @@ export class Init1791732631375 implements MigrationInterface {
     public async down(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`
             ALTER TABLE "issue" DROP CONSTRAINT "FK_830f754da8a8feec9a144c1e177"
-        `);
-        await queryRunner.query(`
-            ALTER TABLE "vehicle" DROP CONSTRAINT "FK_960e864037056a9e38cb4277bdd"
         `);
         await queryRunner.query(`
             DROP TABLE "issue"
@@ -80,9 +60,6 @@ export class Init1791732631375 implements MigrationInterface {
         `);
         await queryRunner.query(`
             DROP TABLE "vehicle"
-        `);
-        await queryRunner.query(`
-            DROP TABLE "vin_specs"
         `);
     }
 
