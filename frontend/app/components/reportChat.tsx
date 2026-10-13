@@ -15,9 +15,6 @@ const GREETING: ChatMessage = {
   text: "Hi! What should we change in your listing? Tip: add the car's VIN to the message.",
 };
 
-// 17 characters, no I, O or Q (same rule as the backend)
-const VIN_PATTERN = /^[A-HJ-NPR-Z0-9]{17}$/i;
-
 const BUBBLE = { px: 1.5, py: 1, borderRadius: 2, maxWidth: "80%" };
 const USER_BUBBLE = {
   ...BUBBLE,
@@ -68,15 +65,6 @@ export function ReportChat(): JSX.Element {
 
     addMessage("user", text);
     setInput("");
-
-    // In VIN mode: check the VIN here first, without bothering the backend
-    if (pendingMessage && !VIN_PATTERN.test(text)) {
-      addMessage(
-        "bot",
-        "That doesn't look like a VIN (17 characters, no I, O or Q). Try again?",
-      );
-      return;
-    }
 
     startTransition(async () => {
       const result = await (pendingMessage
@@ -129,7 +117,7 @@ export function ReportChat(): JSX.Element {
           onChange={(e) => setInput(e.target.value)}
           placeholder={
             pendingMessage
-              ? "Your 17-character VIN"
+              ? "Your VIN"
               : "e.g. the mileage is 41000 km"
           }
           size="small"
