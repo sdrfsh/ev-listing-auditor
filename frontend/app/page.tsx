@@ -11,7 +11,10 @@ export default function CustomerView(): JSX.Element {
           title="Customer View"
           subtitle="Tell us what's wrong with your listing and we'll fix it."
           action={
-            <Link href="/admin" className="text-sm text-[#6b6b66] hover:text-[#1f6f5c]">
+            <Link
+              href="/admin"
+              className="self-start rounded-md border border-[#1f6f5c] px-3 py-1.5 text-sm font-medium text-[#1f6f5c] sm:self-auto sm:border-0 sm:p-0 sm:font-normal sm:text-[#6b6b66] sm:hover:text-[#1f6f5c]"
+            >
               Go to admin dashboard »
             </Link>
           }
