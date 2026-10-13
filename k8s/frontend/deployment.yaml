@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ev-listing-auditor-fe
+spec:
+  selector:
+    matchLabels:
+      app: ev-listing-auditor-fe
+  template:
+    metadata:
+      labels:
+        app: ev-listing-auditor-fe
+    spec:
+      containers:
+        - name: ev-listing-auditor-fe
+          image: ghcr.io/sdrfsh/ev-listing-auditor-frontend:sha-03c489c
+          env:  
+            - name: API_URL
+              value: https://sahar-drfsh.nutria-cobia.ts.net
+          ports:
+          - containerPort: 3000

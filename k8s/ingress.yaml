@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    tailscale.com/funnel: "true"
+  name: ev-listing-auditor-ingress
+spec:
+  ingressClassName: tailscale
+  tls:
+    - hosts:
+       - sahar-drfsh
+  rules:
+    - http:
+        paths:
+        - backend:
+            service:
+              name: ev-listing-auditor-be
+              port:
+                number: 3000
+          path: /
+          pathType: Prefix

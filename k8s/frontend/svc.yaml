@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ev-listing-auditor-fe
+type: Opaque
+data:
+  password: <Password>

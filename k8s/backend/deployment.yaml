@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ev-listing-auditor-be
+spec:
+  selector:
+    matchLabels:
+      app: ev-listing-auditor-be
+  template:
+    metadata:
+      labels:
+        app: ev-listing-auditor-be
+    spec:
+      imagePullSecrets:
+        - name: regcred
+      containers:
+        - name: ev-listing-auditor-be
+          image: ghcr.io/sdrfsh/ev-listing-auditor-backend:sha-03c489c
+          env:
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              valueFrom: 
+                secretKeyRef:
+                  name: postgres-pwd
+                  key: pwd
+            - name: POSTGRES_DB
+              value: ev_listing_auditor
+            - name: POSTGRES_HOST
+              value: postgres.postgres.svc.cluster.local
+            - name: POSTGRES_PORT
+              value: "5432"
+            - name: LLM_BASE_URL
+              value: http://192.168.0.45:11434/v1
+            - name: LLM_MODEL
+              value: qwen2.5:3b
+            - name: LLM_API_KEY
+              value: ollama
+            - name: FRONTEND_URL
+              value: https://sahar-drfsh.nutria-cobia.ts.net
+          ports:
+            - containerPort: 3000
