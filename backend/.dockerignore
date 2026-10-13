@@ -1,0 +1,36 @@
+# Dependencies / build output
+node_modules
+dist
+coverage
+*.tsbuildinfo
+
+# Yarn
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+.pnp.*
+
+# Env / secrets
+.env
+.env.*
+
+# Tests and tooling not needed in the image
+test
+vitest.config*.ts
+.oxlintrc.json
+.prettierrc
+
+# VCS / editor / OS
+.git
+.gitignore
+.vscode
+.idea
+.DS_Store
+
+# Logs
+*.log
+
+# Docker
+Dockerfile
+.dockerignore

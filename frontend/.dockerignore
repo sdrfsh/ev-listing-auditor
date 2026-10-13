@@ -1,0 +1,39 @@
+# Dependencies / build output
+node_modules
+.next
+out
+build
+coverage
+*.tsbuildinfo
+next-env.d.ts
+
+# Yarn
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+.pnp.*
+
+# Env / secrets
+.env
+.env.*
+*.pem
+
+# Docs / agent notes not needed in the image
+README.md
+AGENTS.md
+
+# VCS / editor / OS
+.git
+.gitignore
+.vscode
+.idea
+.DS_Store
+.vercel
+
+# Logs
+*.log
+
+# Docker
+Dockerfile
+.dockerignore
