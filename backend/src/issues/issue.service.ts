@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
   UnprocessableEntityException,
@@ -18,6 +19,13 @@ import {
   ExtractionService,
   equipmentName,
 } from '../extraction/extraction.service.js';
+
+const ALREADY_LISTED = 'Your listing already has these details.';
+const ALREADY_APPLIED = 'This change is already applied to your listing.';
+const ALREADY_PENDING =
+  'There is already an issue for this change. We will check and confirm it soon.';
+const ALREADY_REJECTED =
+  "We couldn't confirm this change. If you believe there is a mistake, please contact us.";
 
 @Injectable()
 export class IssueService {
@@ -60,9 +68,7 @@ export class IssueService {
     });
   }
 
-  // Seller writes free text -> VIN check -> model extracts edits -> one pending issue per edit
   async reportIssue(dto: ReportIssueDto): Promise<Issue[]> {
-    // 1. VIN: from the dto (second try) or from the message itself
     const vin = dto.vin ?? this.extraction.findVin(dto.message);
     if (!vin) {
       throw new UnprocessableEntityException({
@@ -73,36 +79,64 @@ export class IssueService {
       });
     }
 
-    // 2. The car must exist and belong to this seller (404 otherwise)
     const vehicle = await this.vehicleService.findBySellerAndVin(
       dto.sellerId,
       vin,
     );
 
-    // 3. Ask the model what should change (can be several things)
     const extracted = await this.extraction.extract(dto.message);
     if (!extracted) {
       throw new BadRequestException(
         'Sorry, we could not understand what to change. Please be more specific, e.g. "the mileage is 41,000 km".',
       );
     }
-
-    // 4. Skip edits that change nothing: same mileage, adding an item that's
-    //    already listed, or removing ("-item") one that isn't there
     const current = (vehicle.equipments ?? '')
       .split(',')
       .map((item) => item.trim().toLowerCase())
       .filter(Boolean);
+    const history = await this.issues.find({
+      where: { vehicle: { id: vehicle.id } },
+      order: { createdAt: 'DESC' },
+    });
+    const notes = new Set<string>();
+
     const edits = extracted.edits.filter((edit) => {
+      const sameChange = (issue: Issue): boolean =>
+        issue.fieldName === edit.field &&
+        issue.newValue.toLowerCase() === edit.value.toLowerCase();
+
+      let changesNothing: boolean;
       if (edit.field === EditableField.Equipments) {
         const listed = current.includes(equipmentName(edit.value));
         const isRemoval = edit.value.startsWith('-');
-        return isRemoval ? listed : !listed;
+        changesNothing = isRemoval ? !listed : listed;
+      } else {
+        changesNothing = String(vehicle[edit.field]) === edit.value;
       }
-      return String(vehicle[edit.field]) !== edit.value;
+      if (changesNothing) {
+        const confirmed = history.some(
+          (issue) => sameChange(issue) && issue.status === IssueStatus.Confirmed,
+        );
+        notes.add(confirmed ? ALREADY_APPLIED : ALREADY_LISTED);
+        return false;
+      }
+
+      const earlier = history.find(
+        (issue) =>
+          sameChange(issue) &&
+          issue.oldValue === String(vehicle[edit.field] ?? '') &&
+          issue.status !== IssueStatus.Confirmed,
+      );
+      if (earlier) {
+        notes.add(
+          earlier.status === IssueStatus.Pending ? ALREADY_PENDING : ALREADY_REJECTED,
+        );
+        return false;
+      }
+      return true;
     });
     if (!edits.length) {
-      throw new BadRequestException('Your listing already has these details.');
+      throw new ConflictException([...notes].join(' '));
     }
 
     // 5. One pending issue per edit; save([...]) stores them all or none

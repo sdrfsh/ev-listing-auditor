@@ -1,4 +1,5 @@
 import type { JSX } from "react";
+import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
@@ -8,7 +9,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { getIssues } from "@/lib/api";
-import type { IssueStatus } from "@/lib/types";
+import type { Issue, IssueStatus } from "@/lib/types";
 import { EmptyState } from "@/app/components/pageHeader";
 import { IssueActions } from "./issueActions";
 
@@ -17,6 +18,17 @@ const STATUS_COLOR: Record<IssueStatus, "warning" | "success" | "error"> = {
   confirmed: "success",
   rejected: "error",
 };
+
+// Equipment edits: "-item" means remove (red), "item" means add (green)
+function NewValue({ issue }: { issue: Issue }): JSX.Element {
+  if (issue.fieldName !== "equipments") return <>{issue.newValue}</>;
+  const isRemoval = issue.newValue.startsWith("-");
+  return (
+    <Box component="span" sx={{ color: isRemoval ? "error.main" : "success.main", fontWeight: 500 }}>
+      {isRemoval ? issue.newValue.slice(1) : issue.newValue}
+    </Box>
+  );
+}
 
 export async function IssueList(): Promise<JSX.Element> {
   const issues = await getIssues();
@@ -46,7 +58,7 @@ export async function IssueList(): Promise<JSX.Element> {
               <TableCell>{i.sellerMessage}</TableCell>
               <TableCell className="font-medium">{i.fieldName}</TableCell>
               <TableCell className="text-[#6b6b66] line-through decoration-[#c8c8c2]">{i.oldValue ?? "–"}</TableCell>
-              <TableCell>{i.newValue}</TableCell>
+              <TableCell><NewValue issue={i} /></TableCell>
               <TableCell align="right">
                 {i.status === "pending" ? (
                   <IssueActions id={i.id} />

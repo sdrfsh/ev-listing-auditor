@@ -89,7 +89,7 @@ export function ReportChat(): JSX.Element {
           .join(", ");
         addMessage(
           "bot",
-          `Thanks! I created ${result.issues.length} issue(s): ${list}`,
+          `Thanks! I created ${result.issues.length} issue(s): ${list}. We will check and confirm it soon.`,
         );
         setIsDone(true);
       } else {
