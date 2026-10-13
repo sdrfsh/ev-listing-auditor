@@ -61,7 +61,6 @@ FRONTEND_URL=http://localhost:3001
 
 ```env
 API_URL=http://localhost:3000
-NEXT_PUBLIC_API_URL=http://localhost:3000
 ```
 
 ### 3️⃣ Start the database + AI
