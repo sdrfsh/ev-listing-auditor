@@ -6,6 +6,7 @@ import { AppModule } from './app.module.js';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
+  app.setGlobalPrefix('api')
   const env = app.get(ConfigService);
 
   app.enableCors({ origin: env.get<string>('FRONTEND_URL', 'http://localhost:3001') });
@@ -17,7 +18,7 @@ async function bootstrap(): Promise<void> {
     .setDescription('Sellers report forgotten car details; employees confirm the suggested edit.')
     .setVersion('1.0')
     .build();
-  SwaggerModule.setup('docs', app, SwaggerModule.createDocument(app, config));
+  SwaggerModule.setup('api/docs', app, SwaggerModule.createDocument(app, config));
 
   await app.listen(process.env.PORT ?? 3000);
 }
