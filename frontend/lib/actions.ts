@@ -1,7 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import type { Issue, ReportResult } from "@/lib/types";
+import { createVehicle } from "@/lib/api";
+import type { Issue, NewVehicle, ReportResult, Vehicle } from "@/lib/types";
 
 const SELLER_ID = 0;
 
@@ -53,5 +54,20 @@ export async function updateIssueStatus(
     return { ok: true };
   } catch {
     return { ok: false, message: "Can't reach the server. Is the backend running?" };
+  }
+}
+
+export async function addVehicle(
+  vehicle: NewVehicle,
+): Promise<{ ok: true; vehicle: Vehicle } | { ok: false; message: string }> {
+  try {
+    const created = await createVehicle(vehicle);
+    revalidatePath("/admin/vehicles");
+    return { ok: true, vehicle: created };
+  } catch (err) {
+    if (err instanceof TypeError) {
+      return { ok: false, message: "Can't reach the server. Is the backend running?" };
+    }
+    return { ok: false, message: err instanceof Error ? err.message : "Something went wrong." };
   }
 }

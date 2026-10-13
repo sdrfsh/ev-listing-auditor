@@ -11,6 +11,18 @@ export type Vehicle = {
   equipments: string | null;
 };
 
+export type NewVehicle = {
+  sellerId: number;
+  vin: string;
+  model: string;
+  mileage: number;
+  batteryHealth: number;
+  price: number;
+  isSaleReady: boolean;
+  isAvailable: boolean;
+  equipments?: string;
+};
+
 export type IssueStatus = "pending" | "confirmed" | "rejected";
 export type EditableField = "mileage" | "batteryHealth" | "equipments";
 
