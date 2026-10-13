@@ -1,15 +1,25 @@
 import type { Vehicle, Issue, NewVehicle } from "./types";
 
-export async function getVehicles(): Promise<Vehicle[]> {
-  const res = await fetch(`${process.env.API_URL}/vehicles?limit=100`);
-  if (!res.ok) throw new Error(`Backend returned ${res.status}`);
-  return res.json();
+async function getList<T>(path: string): Promise<T[] | null> {
+  try {
+    const res = await fetch(`${process.env.API_URL}${path}`);
+    if (!res.ok) {
+      console.error(`GET ${path} failed: backend returned ${res.status}`);
+      return null;
+    }
+    return await res.json();
+  } catch (err) {
+    console.error(`GET ${path} failed:`, err);
+    return null;
+  }
 }
 
-export async function getIssues(): Promise<Issue[]>{
-  const res = await fetch(`${process.env.API_URL}/issues?limit=100`);
-  if (!res.ok) throw new Error(`Backend returned ${res.status}`);
-  return res.json();
+export async function getVehicles(): Promise<Vehicle[] | null> {
+  return getList<Vehicle>("/vehicles?limit=100");
+}
+
+export async function getIssues(): Promise<Issue[] | null> {
+  return getList<Issue>("/issues?limit=100");
 }
 
 export async function createVehicle(vehicle: NewVehicle): Promise<Vehicle> {

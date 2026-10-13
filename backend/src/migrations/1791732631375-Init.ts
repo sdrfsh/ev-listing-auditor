@@ -9,6 +9,7 @@ export class Init1791732631375 implements MigrationInterface {
                 "id" SERIAL NOT NULL,
                 "seller_id" integer NOT NULL,
                 "vin" character varying NOT NULL,
+                "model" character varying NOT NULL,
                 "mileage" integer NOT NULL,
                 "battery_health" integer NOT NULL,
                 "price" integer NOT NULL,

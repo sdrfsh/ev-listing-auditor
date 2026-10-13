@@ -39,12 +39,9 @@ export class IssueService {
   async findOne(
     id: number,
     relations?: FindOptionsRelations<Issue>,
-  ): Promise<Issue> {
-    const issue = await this.issues.findOne({ where: { id }, relations });
-    if (!issue) {
-      throw new NotFoundException(`issue ${id} not found`);
-    }
-    return issue;
+  ): Promise<Issue | null> {
+    // Returns null when there is no issue with this id
+    return await this.issues.findOne({ where: { id }, relations });
   }
 
   async findByVehicleId(vehicleId: number): Promise<Issue[]> {
@@ -124,7 +121,9 @@ export class IssueService {
   }
 
   async createIssue(dto: CreateIssuesDto): Promise<Issue> {
-    await this.vehicleService.findOne(dto.vehicleId);
+    if (!(await this.vehicleService.findOne(dto.vehicleId))) {
+      throw new NotFoundException(`Vehicle ${dto.vehicleId} not found`);
+    }
     const issue = this.issues.create({
       sellerId: dto.sellerId,
       vehicle: {
@@ -144,6 +143,9 @@ export class IssueService {
     status: IssueStatus,
   ): Promise<Issue> {
     const issue = await this.findOne(issue_id, { vehicle: true });
+    if (!issue) {
+      throw new NotFoundException(`issue ${issue_id} not found`);
+    }
 
     if (issue.status !== IssueStatus.Pending) {
       throw new BadRequestException(

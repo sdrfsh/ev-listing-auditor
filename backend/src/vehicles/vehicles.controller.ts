@@ -24,7 +24,7 @@ export class VehicleController {
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number): Promise<Vehicle> {
+  findOne(@Param('id', ParseIntPipe) id: number): Promise<Vehicle | null> {
     return this.vehiclesService.findOne(id);
   }
 

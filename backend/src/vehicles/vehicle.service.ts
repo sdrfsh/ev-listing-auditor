@@ -23,14 +23,10 @@ export class VehicleService {
     });
   }
 
-  async findOne(id: number): Promise<Vehicle> {
-    const vehicle = await this.vehicles.findOne({
+  async findOne(id: number): Promise<Vehicle | null> {
+    return await this.vehicles.findOne({
       where: { id },
     });
-    if (!vehicle) {
-      throw new NotFoundException(`Vehicle ${id} not found`);
-    }
-    return vehicle;
   }
 
   async findBySellerId(seller_id: number): Promise<Vehicle[]> {

@@ -23,7 +23,8 @@ function YesNo({ value }: { value: boolean }): JSX.Element {
 export async function VehicleList(): Promise<JSX.Element> {
   const vehicles = await getVehicles();
 
-  if (vehicles.length === 0) return <EmptyState>No vehicles yet.</EmptyState>;
+  if (vehicles === null) return <EmptyState>Couldn&apos;t load vehicles. Please try again later.</EmptyState>;
+  if (vehicles.length === 0) return <EmptyState>No vehicles have been submitted yet.</EmptyState>;
 
   return (
     <TableContainer component={Paper}>

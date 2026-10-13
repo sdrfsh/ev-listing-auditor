@@ -21,7 +21,8 @@ const STATUS_COLOR: Record<IssueStatus, "warning" | "success" | "error"> = {
 export async function IssueList(): Promise<JSX.Element> {
   const issues = await getIssues();
 
-  if (issues.length === 0) return <EmptyState>No issues yet.</EmptyState>;
+  if (issues === null) return <EmptyState>Couldn&apos;t load issues. Please try again later.</EmptyState>;
+  if (issues.length === 0) return <EmptyState>No issues have been submitted yet.</EmptyState>;
 
   return (
     <TableContainer component={Paper}>

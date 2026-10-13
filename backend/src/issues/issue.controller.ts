@@ -27,7 +27,7 @@ export class IssueController {
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number): Promise<Issue> {
+  findOne(@Param('id', ParseIntPipe) id: number): Promise<Issue | null> {
     return this.issueService.findOne(id);
   }
 
