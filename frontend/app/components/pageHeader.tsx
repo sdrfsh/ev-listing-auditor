@@ -10,7 +10,7 @@ export function PageHeader({
   action?: ReactNode;
 }): JSX.Element {
   return (
-    <header className="mb-8 flex items-end justify-between gap-4">
+    <header className="mb-6 flex flex-col gap-3 sm:mb-8 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
         {subtitle && <p className="mt-1 text-sm text-[#6b6b66]">{subtitle}</p>}

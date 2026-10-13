@@ -18,7 +18,7 @@ const GREETING: ChatMessage = {
 // 17 characters, no I, O or Q (same rule as the backend)
 const VIN_PATTERN = /^[A-HJ-NPR-Z0-9]{17}$/i;
 
-const BUBBLE = { px: 1.5, py: 1, borderRadius: 2, maxWidth: "80%" };
+const BUBBLE = { px: 1.5, py: 1, borderRadius: 2, maxWidth: { xs: "90%", sm: "80%" }, overflowWrap: "anywhere" };
 const USER_BUBBLE = {
   ...BUBBLE,
   alignSelf: "flex-end",
@@ -107,7 +107,7 @@ export function ReportChat(): JSX.Element {
         Report an issue
       </Box>
 
-      <Stack ref={scrollRef} spacing={1} sx={{ p: 2, height: 360, overflowY: "auto" }}>
+      <Stack ref={scrollRef} spacing={1} sx={{ p: 2, height: { xs: "min(360px, 55dvh)", sm: 360 }, overflowY: "auto" }}>
         {messages.map((m, index) => (
           <Box
             key={index}
@@ -137,7 +137,7 @@ export function ReportChat(): JSX.Element {
           autoFocus
           disabled={isPending || isDone}
         />
-        <Button type="submit" variant="contained" disabled={isPending}>
+        <Button type="submit" variant="contained" disabled={isPending} sx={{ flexShrink: 0 }}>
           {isDone ? "Restart" : "Send"}
         </Button>
       </Box>

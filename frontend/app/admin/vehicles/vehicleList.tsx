@@ -28,7 +28,7 @@ export async function VehicleList(): Promise<JSX.Element> {
 
   return (
     <TableContainer component={Paper}>
-      <Table>
+      <Table sx={{ minWidth: 900 }}>
         <TableHead>
           <TableRow>
             <TableCell>Model</TableCell>
@@ -44,9 +44,9 @@ export async function VehicleList(): Promise<JSX.Element> {
         <TableBody>
           {vehicles.map((v) => (
             <TableRow key={v.id} hover>
-              <TableCell className="text-xs text-[#6b6b66]">{v.model}</TableCell>
+              <TableCell className="whitespace-nowrap text-xs text-[#6b6b66]">{v.model}</TableCell>
               <TableCell className="font-mono text-xs text-[#6b6b66]">{v.vin}</TableCell>
-              <TableCell align="right">{`${v.mileage.toLocaleString()} km`}</TableCell>
+              <TableCell align="right" className="whitespace-nowrap">{`${v.mileage.toLocaleString()} km`}</TableCell>
               <TableCell align="right">{`${v.batteryHealth}%`}</TableCell>
               <TableCell className="text-[#6b6b66]">{v.equipments ?? "–"}</TableCell>
               <TableCell align="right" className="font-medium">{v.price.toLocaleString()}</TableCell>

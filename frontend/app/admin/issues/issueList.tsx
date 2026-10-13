@@ -38,7 +38,7 @@ export async function IssueList(): Promise<JSX.Element> {
 
   return (
     <TableContainer component={Paper}>
-      <Table>
+      <Table sx={{ minWidth: 760 }}>
         <TableHead>
           <TableRow>
             <TableCell>Created</TableCell>

@@ -43,9 +43,9 @@ export function AddVehicleForm(): JSX.Element {
   }
 
   return (
-    <Paper component="form" onSubmit={handleSubmit} sx={{ p: 3, maxWidth: 640 }}>
+    <Paper component="form" onSubmit={handleSubmit} sx={{ p: { xs: 2, sm: 3 }, maxWidth: 640 }}>
       <Stack spacing={2.5}>
-        <Stack direction="row" spacing={2}>
+        <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
           <TextField name="model" label="Model" required fullWidth />
           <TextField
             name="sellerId"
@@ -54,7 +54,7 @@ export function AddVehicleForm(): JSX.Element {
             required
             defaultValue={0}
             slotProps={{ htmlInput: { min: 0, step: 1 } }}
-            sx={{ width: 160 }}
+            sx={{ width: { xs: "100%", sm: 160 }, flexShrink: 0 }}
           />
         </Stack>
         <TextField
@@ -65,7 +65,7 @@ export function AddVehicleForm(): JSX.Element {
           helperText="17 letters and digits, no I, O or Q (e.g. 5YJ3E1EA7KF317000)"
           slotProps={{ htmlInput: { style: { fontFamily: "monospace" } } }}
         />
-        <Stack direction="row" spacing={2}>
+        <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
           <TextField
             name="mileage"
             label="Mileage (km)"
@@ -92,7 +92,7 @@ export function AddVehicleForm(): JSX.Element {
           />
         </Stack>
         <TextField name="equipments" label="Equipment" multiline minRows={2} fullWidth />
-        <Stack direction="row" spacing={3}>
+        <Stack direction="row" spacing={3} useFlexGap sx={{ flexWrap: "wrap" }}>
           <FormControlLabel control={<Switch name="isSaleReady" />} label="Sale ready" />
           <FormControlLabel control={<Switch name="isAvailable" defaultChecked />} label="Available" />
         </Stack>
