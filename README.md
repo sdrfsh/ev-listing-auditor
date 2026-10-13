@@ -1,124 +1,209 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# ⚡ EV Listing Auditor
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+> **TL;DR:** A seller types *"oh, it also has winter tires and the battery is at 91%"*.
+> A small local AI turns that into **suggested edits**. An employee clicks **Confirm** or **Reject**. Done.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## 🧭 Jump to
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+| I want to… | Go to |
+| --- | --- |
+| Get it running fast | [🚀 Quick start](#-quick-start-5-steps) |
+| Understand how it works | [🧠 How it works](#-how-it-works-30-seconds) |
+| Find a URL or port | [🔗 Where things live](#-where-things-live) |
+| Fix something broken | [🧯 Troubleshooting](#-troubleshooting) |
 
-## Project setup
+---
 
-```bash
-$ yarn install
+## 🧠 How it works (30 seconds)
+
+```
+Seller message ──► Backend finds VIN ──► Local LLM finds edits ──► Pending issues ──► Employee confirms ──► Car updated ✅
 ```
 
-## Compile and run the project
+1. **Seller** writes a normal sentence in the chat.
+2. **VIN** (17 characters) is found with a regex. No VIN → the app asks for it.
+3. **AI** pulls out edits. Only 3 fields can change:
+   - `mileage` (km)
+   - `batteryHealth` (%)
+   - `equipments` (add an item, or remove it with `-tow bar`)
+4. Each edit becomes a **pending issue**.
+5. **Employee** confirms → the vehicle row is updated. Rejects → nothing changes.
 
-```bash
-# development
-$ yarn run start
+---
 
-# watch mode
-$ yarn run start:dev
+## 🧰 What you need
 
-# production mode
-$ yarn run start:prod
+- [ ] **Docker** (runs Postgres + Ollama)
+- [ ] **Node 24** + **Yarn 4** (pinned with Volta)
+
+That's it.
+
+---
+
+## 🚀 Quick start (5 steps)
+
+### 1️⃣ Create `.env` in the repo root
+
+```env
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+POSTGRES_DB=ev_auditor
+
+LLM_BASE_URL=http://localhost:11434/v1
+LLM_MODEL=qwen2.5:3b
+LLM_API_KEY=
+FRONTEND_URL=http://localhost:3001
 ```
 
-## Run tests
+### 2️⃣ Create `frontend/.env.local`
 
-```bash
-# unit tests
-$ yarn run test
-
-# e2e tests
-$ yarn run test:e2e
-
-# test coverage
-$ yarn run test:cov
+```env
+API_URL=http://localhost:3000
+NEXT_PUBLIC_API_URL=http://localhost:3000
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### 3️⃣ Start the database + AI
 
 ```bash
-$ yarn install -g @nestjs/mau
-$ mau deploy
+docker compose up -d
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+⏳ First run downloads the model. Give it a minute.
 
-## Observability
-
-In production applications, observability is essential for understanding how your system behaves, detecting issues early, and maintaining reliable performance.
-
-[NestJS Observe](https://observe.nestjs.com) automatically instruments your NestJS application, giving you deep visibility into your system with minimal setup:
-
-- **Distributed tracing:** Follow requests across services and understand how they flow through your system.
-- **Waterfall analysis:** Visualize request execution and identify slow operations, bottlenecks, and unexpected delays.
-- **Performance analysis:** Analyze application performance in real time and quickly pinpoint areas that need optimization.
-- **Metrics:** Track key application and infrastructure metrics to understand system health and performance trends.
-- **Logging:** Centralize and correlate logs with traces and other telemetry to make debugging easier.
-- **Error tracking:** Detect errors quickly and investigate their root causes with the surrounding context.
-- **SLA monitoring:** Track service-level objectives and identify when your application is approaching or exceeding defined thresholds.
-- **Alarms and alerts:** Set up alerts for critical errors, performance degradation, SLA violations, and other anomalies so your team can react quickly.
-
-To add it to this project:
+### 4️⃣ Start the backend
 
 ```bash
-$ yarn install @nestjs/observe
+cd backend
+yarn install
+yarn start:dev
 ```
 
-Then follow the [setup guide](https://docs.nestjs.com/observability/overview) - it takes a single import and an app key.
+✅ Database migrations run **automatically** on start.
 
-The free plan needs no payment details and covers 300,000 events a month. You can also browse the [live demo](https://www.observe-demo.nestjs.com/dashboard) first - the whole dashboard over a busy service's data, with nothing to install.
+### 5️⃣ Start the frontend (new terminal)
 
-## Resources
+```bash
+cd frontend
+yarn install
+yarn dev
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+🎉 Open **http://localhost:3001**
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Auto-instrument your application with [NestJS Observe](https://observe.nestjs.com). Distributed tracing, metrics, and logging made easy. Error tracking and performance monitoring for your NestJS applications.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+---
 
-## Support
+## 🔗 Where things live
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+| What | URL |
+| --- | --- |
+| 🛒 Seller chat | http://localhost:3001 |
+| 🧑‍💼 Admin dashboard | http://localhost:3001/admin |
+| ⚙️ Backend API | http://localhost:3000 |
+| 📖 API docs (Swagger) | http://localhost:3000/docs |
+| ❤️ Health check | http://localhost:3000/health-check |
+| 🐘 Postgres | `localhost:5431` |
+| 🦙 Ollama | `localhost:11434` |
 
-## Stay in touch
+---
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## 📁 Project map
 
-## License
+```
+ev-listing-auditor/
+├── compose.yaml        🐳 Postgres (pgvector) + Ollama
+├── .env                🔑 shared settings (not committed)
+├── backend/            🐱 NestJS + TypeORM
+│   └── src/
+│       ├── vehicles/     cars
+│       ├── issues/       seller reports + confirm/reject
+│       ├── extraction/   VIN regex + LLM prompt
+│       └── migrations/   DB schema
+└── frontend/           ▲ Next.js + MUI
+    ├── app/            pages (seller chat, /admin)
+    └── lib/            API calls
+```
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+---
+
+## 🛠️ Everyday commands
+
+<details>
+<summary><b>Backend</b> (run inside <code>backend/</code>)</summary>
+
+| Command | Does |
+| --- | --- |
+| `yarn start:dev` | Run with auto-reload |
+| `yarn test` | Unit tests |
+| `yarn test:e2e` | End-to-end tests |
+| `yarn lint` | Lint |
+| `yarn build` | Lint + build |
+| `yarn migration:generate src/migrations/Name` | New migration from entity changes |
+| `yarn migration:run` | Apply migrations |
+| `yarn migration:revert` | Undo last migration |
+| `yarn migration:show` | List migrations |
+
+</details>
+
+<details>
+<summary><b>Frontend</b> (run inside <code>frontend/</code>)</summary>
+
+| Command | Does |
+| --- | --- |
+| `yarn dev` | Run on port 3001 |
+| `yarn build` | Production build |
+| `yarn lint` | Lint |
+
+</details>
+
+---
+
+## 🔌 API cheat sheet
+
+<details>
+<summary>Show endpoints</summary>
+
+**Vehicles**
+- `GET /vehicles` — list (`?limit=&offset=`)
+- `GET /vehicles/:id`
+- `GET /vehicles/seller/:seller_id`
+- `POST /vehicles/create`
+
+**Issues**
+- `POST /issues/report` — ⭐ seller free text → pending issues
+- `PUT /issues/:id/status` — `confirmed` or `rejected`
+- `GET /issues` — list (`?limit=&offset=`)
+- `GET /issues/:id`
+- `GET /issues/vehicle/:vehicle_id`
+- `GET /issues/vin/:vin`
+- `GET /issues/seller/:seller_id`
+- `POST /issues/create`
+
+Full details + try-it-out: **http://localhost:3000/docs**
+
+</details>
+
+---
+
+## 🧯 Troubleshooting
+
+| 😵 Problem | 💡 Try |
+| --- | --- |
+| Backend can't reach the database | `docker compose ps` — is `db` running? Port is **5431**, not 5432. |
+| Chat says *"could not understand"* | Model not pulled yet. Run `docker compose logs ollama-pull`. |
+| Chat asks for a VIN | Add the 17-character VIN to the message. |
+| Frontend shows no data | Check `API_URL` in `frontend/.env.local` and that the backend is up. |
+| CORS error in browser | `FRONTEND_URL` in `.env` must match the frontend URL. |
+
+---
+
+## 🧪 Want a different AI?
+
+Any **OpenAI-compatible** API works. Change 3 lines in `.env`:
+
+```env
+LLM_BASE_URL=https://your-provider/v1
+LLM_MODEL=your-model
+LLM_API_KEY=your-key
+```
