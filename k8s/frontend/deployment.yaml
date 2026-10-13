@@ -11,11 +11,13 @@ spec:
       labels:
         app: ev-listing-auditor-fe
     spec:
+      imagePullSecrets:
+        - name: regcred
       containers:
         - name: ev-listing-auditor-fe
-          image: ghcr.io/sdrfsh/ev-listing-auditor-frontend:sha-03c489c
+          image: ghcr.io/sdrfsh/ev-listing-auditor-frontend:sha-202499b
           env:  
             - name: API_URL
-              value: https://sahar-drfsh.nutria-cobia.ts.net
+              value: https://sahar-drfsh.nutria-cobia.ts.net/api
           ports:
-          - containerPort: 3000
+          - containerPort: 3001

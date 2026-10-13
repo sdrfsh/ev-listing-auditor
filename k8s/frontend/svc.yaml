@@ -1,7 +1,10 @@
 apiVersion: v1
-kind: Secret
+kind: Service
 metadata:
   name: ev-listing-auditor-fe
-type: Opaque
-data:
-  password: <Password>
+spec:
+  selector:
+    app: ev-listing-auditor-fe
+  ports:
+  - port: 3000
+    targetPort: 3001

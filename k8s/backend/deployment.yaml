@@ -15,7 +15,7 @@ spec:
         - name: regcred
       containers:
         - name: ev-listing-auditor-be
-          image: ghcr.io/sdrfsh/ev-listing-auditor-backend:sha-03c489c
+          image: ghcr.io/sdrfsh/ev-listing-auditor-backend:sha-ef28b85
           env:
             - name: POSTGRES_USER
               value: postgres

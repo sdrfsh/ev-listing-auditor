@@ -12,10 +12,17 @@ spec:
   rules:
     - http:
         paths:
-        - backend:
-            service:
-              name: ev-listing-auditor-be
-              port:
-                number: 3000
-          path: /
-          pathType: Prefix
+          - backend:
+              service:
+                name: ev-listing-auditor-be
+                port:
+                  number: 3000
+            path: /api
+            pathType: Prefix
+          - backend:
+              service:
+                name: ev-listing-auditor-fe
+                port:
+                  number: 3000
+            path: /
+            pathType: Prefix
