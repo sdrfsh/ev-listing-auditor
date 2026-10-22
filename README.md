@@ -3,12 +3,31 @@
 > **TL;DR:** A seller types *"oh, it also has winter tires and the battery is at 91%"*.
 > A small local AI turns that into **suggested edits**. An employee clicks **Confirm** or **Reject**. Done.
 
+## 🌐 Live demo
+
+**👉 [sahar-drfsh.nutria-cobia.ts.net](https://sahar-drfsh.nutria-cobia.ts.net/)**
+
+| Try | Link |
+| --- | --- |
+| 🛒 Seller chat | [sahar-drfsh.nutria-cobia.ts.net](https://sahar-drfsh.nutria-cobia.ts.net/) |
+| 🧑‍💼 Admin dashboard | [/admin](https://sahar-drfsh.nutria-cobia.ts.net/admin) |
+| 🚗 Vehicles | [/admin/vehicles](https://sahar-drfsh.nutria-cobia.ts.net/admin/vehicles) |
+| 📝 Issues | [/admin/issues](https://sahar-drfsh.nutria-cobia.ts.net/admin/issues) |
+| 📖 API docs (Swagger) | [/api/docs](https://sahar-drfsh.nutria-cobia.ts.net/api/docs) |
+
+💡 **Try it:** pick a car from [/admin/vehicles](https://sahar-drfsh.nutria-cobia.ts.net/admin/vehicles), copy its VIN, then tell the seller chat something like
+*"VIN … — mileage is now 48,000 km, battery at 91%, and I added winter tires."*
+Then open [/admin/issues](https://sahar-drfsh.nutria-cobia.ts.net/admin/issues) and confirm or reject the suggested edits.
+
+> Hosted on a home Kubernetes cluster via Tailscale Funnel — it may occasionally be offline.
+
 ---
 
 ## 🧭 Jump to
 
 | I want to… | Go to |
 | --- | --- |
+| Just try it | [🌐 Live demo](#-live-demo) |
 | Get it running fast | [🚀 Quick start](#-quick-start-5-steps) |
 | Understand how it works | [🧠 How it works](#-how-it-works-30-seconds) |
 | Find a URL or port | [🔗 Where things live](#-where-things-live) |
@@ -109,16 +128,16 @@ yarn dev
 
 ## 🔗 Where things live
 
-| What | URL |
-| --- | --- |
-| 🛒 Seller chat | http://localhost:3001 |
-| 🧑‍💼 Admin dashboard | http://localhost:3001/admin |
-| 🚗 Admin · vehicles | http://localhost:3001/admin/vehicles (add one at `/admin/vehicles/new`) |
-| 📝 Admin · issues | http://localhost:3001/admin/issues |
-| ⚙️ Backend API | http://localhost:3000/api |
-| 📖 API docs (Swagger) | http://localhost:3000/api/docs (JSON: `/api/docs-json`) |
-| 🐘 Postgres | `localhost:5431` |
-| 🦙 Ollama | `localhost:11434` |
+| What | Local | Live demo |
+| --- | --- | --- |
+| 🛒 Seller chat | http://localhost:3001 | [`/`](https://sahar-drfsh.nutria-cobia.ts.net/) |
+| 🧑‍💼 Admin dashboard | http://localhost:3001/admin | [`/admin`](https://sahar-drfsh.nutria-cobia.ts.net/admin) |
+| 🚗 Admin · vehicles | http://localhost:3001/admin/vehicles (add one at `/admin/vehicles/new`) | [`/admin/vehicles`](https://sahar-drfsh.nutria-cobia.ts.net/admin/vehicles) |
+| 📝 Admin · issues | http://localhost:3001/admin/issues | [`/admin/issues`](https://sahar-drfsh.nutria-cobia.ts.net/admin/issues) |
+| ⚙️ Backend API | http://localhost:3000/api | [`/api`](https://sahar-drfsh.nutria-cobia.ts.net/api) |
+| 📖 API docs (Swagger) | http://localhost:3000/api/docs (JSON: `/api/docs-json`) | [`/api/docs`](https://sahar-drfsh.nutria-cobia.ts.net/api/docs) |
+| 🐘 Postgres | `localhost:5431` | — |
+| 🦙 Ollama | `localhost:11434` | — |
 
 ---
 
@@ -202,7 +221,7 @@ All routes are prefixed with **`/api`**. Lists take `?limit=` (1–100, default 
 - `GET /api/issues/seller/:seller_id`
 - `POST /api/issues/create`
 
-Full details + try-it-out: **http://localhost:3000/api/docs**
+Full details + try-it-out: **http://localhost:3000/api/docs** (or live: **[sahar-drfsh.nutria-cobia.ts.net/api/docs](https://sahar-drfsh.nutria-cobia.ts.net/api/docs)**)
 
 </details>
 
@@ -240,7 +259,7 @@ Images: `ghcr.io/sdrfsh/ev-listing-auditor-backend` and `ghcr.io/sdrfsh/ev-listi
 **Kubernetes** — manifests in [`k8s/`](k8s/):
 
 - `backend/` + `frontend/` — Deployment + Service each (pull secret `regcred`).
-- `ingress.yaml` — Tailscale Ingress (Funnel): `/api` → backend, `/` → frontend.
+- `ingress.yaml` — Tailscale Ingress (Funnel) on host `sahar-drfsh`, public at **https://sahar-drfsh.nutria-cobia.ts.net**: `/api` → backend, `/` → frontend.
 - Backend expects a Secret `postgres-pwd` (key `pwd`) and an external Postgres + Ollama.
 
 ```bash
