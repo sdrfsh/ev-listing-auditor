@@ -1,6 +1,6 @@
 # ⚡ EV Listing Auditor
 
-> **TL;DR:** A seller types *"oh, it also has winter tires and the battery is at 91%"*.
+> A seller types *"oh, it also has winter tires and the battery is at 91%"*.
 > A small local AI turns that into **suggested edits**. An employee clicks **Confirm** or **Reject**. Done.
 
 ## 🌐 Live demo
